@@ -14,8 +14,10 @@ gem 'pg'
 # use figaro for environment variables
 gem 'figaro'
 # Use pry for debugging purposes
- gem 'pry'
- gem "slim-rails"
+gem 'pry'
+gem "slim-rails"
+gem 'stripe', '~> 5.7.1'
+gem 'stripe_event'
 gem 'rename'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'

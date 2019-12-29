@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_24_204236) do
+ActiveRecord::Schema.define(version: 2019_12_29_152710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,28 @@ ActiveRecord::Schema.define(version: 2019_11_24_204236) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
+  create_table "plans", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.integer "amount"
+    t.string "currency"
+    t.string "interval"
+    t.string "plan_tok"
+    t.string "description"
+    t.integer "interval_count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.string "description"
+    t.string "status"
+    t.string "subscription_tok"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id"
+    t.bigint "plan_id"
+  end
+
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -49,6 +71,8 @@ ActiveRecord::Schema.define(version: 2019_11_24_204236) do
     t.string "authentication_token", limit: 30
     t.string "reset_token"
     t.boolean "notification_status", default: false
+    t.string "stripe_cutomer_id"
+    t.string "role"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
