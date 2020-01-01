@@ -24,7 +24,12 @@ class Api::V1::UsersController < ApplicationController
   def get_user
     image_url = ""
     image_url = url_for(@user.profile_photo) if @user.profile_photo.attached?
-    render json: { first_name: @user.first_name, last_name: @user.last_name, email: @user.email, profile_photo: image_url }, status: 200
+    if @user.subscriptions.present?
+      subscribed = true
+    else
+      subscribed = false
+    end
+    render json: { first_name: @user.first_name, last_name: @user.last_name, email: @user.email, profile_photo: image_url, subscribed: subscribed }, status: 200
   rescue StandardError => e # rescue if any exception occurr
     render json: { message: "Error: Something went wrong... " }, status: 400
   end
@@ -93,7 +98,7 @@ class Api::V1::UsersController < ApplicationController
     @user.update(reset_token: @token)
     render json: { message: "Please check your Email for reset password!" }, status: 200
   rescue StandardError => e
-    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+    render json: { message: "System mail account errors: #{e}  " }, status: :bad_request
   end
 
   # Method that take new password and confirm password and reset user password
