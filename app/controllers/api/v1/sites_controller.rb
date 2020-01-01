@@ -27,14 +27,14 @@ class Api::V1::SitesController < ApplicationController
     else
       image_url = ""
       image_url = url_for(@site.image) if @site.image.attached?
-      render json: { site_id: site.id, name: site.name, image: image_url }, status: 200
+      render json: { site_id: @site.id, name: @site.name, image: image_url }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 
   def index
-    sites = site.all; all_sites = []
+    sites = Site.all; all_sites = []
     sites.each do |site|
       image_url = ""
       image_url = url_for(site.image) if site.image.attached?
@@ -55,7 +55,7 @@ class Api::V1::SitesController < ApplicationController
   private
 
   def set_site # instance methode for site
-    @site = site.find_by_id(params[:site_id])
+    @site = Site.find_by_id(params[:site_id])
     if @site.present?
       return true
     else

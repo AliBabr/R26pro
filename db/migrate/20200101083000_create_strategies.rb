@@ -1,8 +1,8 @@
-class CreateStartegies < ActiveRecord::Migration[5.2]
+class CreateStrategies < ActiveRecord::Migration[5.2]
   def change
     create_table :strategies do |t|
       t.string :name
-      t.integer :type
+      t.integer :strategy_type
       t.timestamps
     end
   end

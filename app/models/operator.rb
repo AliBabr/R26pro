@@ -1,5 +1,6 @@
 class Operator < ApplicationRecord
-  has_one_attached :sketch_image
-  has_one :summary_image, dependent: :destroy
+  has_one_attached :logo_image
+  has_one :sketch
+  has_one :summary_image
   belongs_to :strategy
 end

@@ -25,15 +25,14 @@ class Api::V1::MapsController < ApplicationController
     else
       image_url = ""
       image_url = url_for(@map.image) if @map.image.attached?
-      render json: { message: "Error: Something went wrong... " }, status: :bad_request
-      render json: { map_id: map.id, name: map.name, image: image_url }, status: 200
+      render json: { map_id: @map.id, name: @map.name, image: image_url }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 
   def index
-    maps = map.all; all_maps = []
+    maps = Map.all; all_maps = []
     maps.each do |map|
       image_url = ""
       image_url = url_for(map.image) if map.image.attached?

@@ -2,7 +2,7 @@
 
 class Api::V1::StrategiesController < ApplicationController
   before_action :authenticate
-  before_action :set_strategy, only: %i[destroy update_strategy]
+  before_action :set_strategy, only: %i[destroy_strategy update_strategy]
   before_action :set_site, only: %i[create]
   before_action :is_admin, only: %i[create destroy_strategy update_strategy]
 
@@ -12,7 +12,7 @@ class Api::V1::StrategiesController < ApplicationController
     if strategy.save
       image_url = ""
       image_url = url_for(strategy.image) if strategy.image.attached?
-      render json: { strategy_id: strategy.id, name: strategy.name, image: image_url }, status: 200
+      render json: { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url }, status: 200
     else
       render json: strategy.errors.messages, status: 400
     end
@@ -27,14 +27,14 @@ class Api::V1::StrategiesController < ApplicationController
     else
       image_url = ""
       image_url = url_for(@strategy.image) if @strategy.image.attached?
-      render json: { strategy_id: strategy.id, name: strategy.name, image: image_url }, status: 200
+      render json: { strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 
   def index
-    strategys = strategy.all; all_strategys = []
+    strategys = Strategy.all; all_strategys = []
     strategys.each do |strategy|
       image_url = ""
       image_url = url_for(strategy.image) if strategy.image.attached?
@@ -73,7 +73,7 @@ class Api::V1::StrategiesController < ApplicationController
   end
 
   def strategy_params
-    params.permit(:name, :image, :type)
+    params.permit(:name, :image, :strategy_type)
   end
 
   def is_admin
