@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_29_152710) do
+ActiveRecord::Schema.define(version: 2020_01_01_092809) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,24 @@ ActiveRecord::Schema.define(version: 2019_12_29_152710) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
+  create_table "maps", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "operators", force: :cascade do |t|
+    t.string "name"
+    t.string "birth"
+    t.string "height"
+    t.string "weight"
+    t.string "armor"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "strategy_id"
+  end
+
   create_table "plans", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "amount"
@@ -48,6 +66,27 @@ ActiveRecord::Schema.define(version: 2019_12_29_152710) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sites", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "map_id"
+  end
+
+  create_table "sketches", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "operator_id"
+  end
+
+  create_table "strategies", force: :cascade do |t|
+    t.string "name"
+    t.integer "strategy_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "site_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.string "description"
     t.string "status"
@@ -56,6 +95,12 @@ ActiveRecord::Schema.define(version: 2019_12_29_152710) do
     t.datetime "updated_at", null: false
     t.string "user_id"
     t.bigint "plan_id"
+  end
+
+  create_table "summary_images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "operator_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|

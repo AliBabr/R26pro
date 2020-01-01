@@ -29,6 +29,34 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :maps, only: %i[create index] do
+        collection do
+          put :update_map
+          delete :destroy_map
+        end
+      end
+
+      resources :sites, only: %i[create index] do
+        collection do
+          put :update_site
+          delete :destroy_site
+        end
+      end
+
+      resources :strategies, only: %i[create index] do
+        collection do
+          put :update_strategy
+          delete :destroy_strategy
+        end
+      end
+
+      resources :operators, only: %i[create index] do
+        collection do
+          put :update_operator
+          delete :destroy_operator
+        end
+      end
+
       resources :plans, only: %i[create update destroy index] do
         collection do
           delete :delete_plan
