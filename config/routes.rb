@@ -36,6 +36,20 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :operator_details, only: %i[create index] do
+        collection do
+          put :update_detail
+          delete :destroy_detail
+        end
+      end
+
+      resources :weapons, only: %i[create index] do
+        collection do
+          put :update_weapon
+          delete :destroy_weapon
+        end
+      end
+
       resources :sites, only: %i[create index] do
         collection do
           put :update_site
