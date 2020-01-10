@@ -38,7 +38,7 @@ class Api::V1::StrategiesController < ApplicationController
     strategys.each do |strategy|
       image_url = ""
       image_url = url_for(strategy.image) if strategy.image.attached?
-      all_strategys << { strategy_id: strategy.id, name: strategy.name, image: image_url }
+      all_strategys << { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url }
     end
     render json: all_strategys, status: 200
   rescue StandardError => e
