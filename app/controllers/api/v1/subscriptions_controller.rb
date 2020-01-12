@@ -5,7 +5,7 @@ class Api::V1::SubscriptionsController < ApplicationController
 
   def create
     if params[:plan_id].present? && Plan.find_by_id(params[:plan_id]).present?
-      response = StripePayment.new(@user).create_subscription(params[:plan_id].to_s)
+      response = StripePayment.new(@user).create_subscription(params[:plan_id].to_s, check_coupon())
       if response.present?
         save_subscription(response)
       else
@@ -20,7 +20,7 @@ class Api::V1::SubscriptionsController < ApplicationController
 
   def upgrade_subscription
     if params[:plan_id].present? && Plan.find_by_id(params[:plan_id]).present?
-      response = StripePayment.new(@user).create_subscription(params[:plan_id].to_s)
+      response = StripePayment.new(@user).create_subscription(params[:plan_id].to_s, check_coupon())
       if response.present?
         save_upgrade(response)
       else
@@ -76,6 +76,7 @@ class Api::V1::SubscriptionsController < ApplicationController
     sub.status = "active"; sub.subscription_tok = subscription.id; sub.description = "New subscription against plan #{params[:plan_id]}"
     sub.user = @user
     sub.plan = Plan.find_by_plan_tok(params[:plan_tok])
+    sub.coupon = params[:coupon_token] if params[:coupon_token].present? && Coupon.find_by_token(params[:coupon_token]).present?
     if sub.save
       render json: { message: "Your subscription has been set" }, status: 200
     else
@@ -92,10 +93,24 @@ class Api::V1::SubscriptionsController < ApplicationController
     sub.status = "active"; sub.subscription_tok = subscription.id; sub.description = "New subscription against plan #{params[:plan_id]}"
     sub.user = @user
     sub.plan = Plan.find_by_id(params[:plan_id])
+    sub.coupon = curr_subs.coupon if curr_subs.coupon.present?
     if sub.save
       render json: { message: "Your subscription has beed upgraded successfully!" }, status: 200
     else
       render json: sub.errors.messages, status: 400
     end
+  end
+
+  def check_coupon
+    gift = ""
+    if params[:coupon_token].present?
+      coupon = Coupon.find_by_token(params[:coupon_token])
+      if coupon.present?
+        gift = coupon.token
+      else
+        render json: { message: "please provide valid coupon" }, status: 401
+      end
+    end
+    return gift
   end
 end

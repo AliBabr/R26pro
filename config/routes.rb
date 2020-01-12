@@ -29,6 +29,12 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :coupons, only: %i[create index] do
+        collection do
+          delete :delete_coupon
+        end
+      end
+
       resources :maps, only: %i[create index] do
         collection do
           put :update_map
