@@ -120,7 +120,7 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def set_summary_images(operator)
-    if params[:summary_image].present?
+    if params[:summary_images].present?
       summary_images = SummaryImage.new()
       images = params[:summary_images].values
       summary_images.images = images
