@@ -120,18 +120,22 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def set_summary_images(operator)
-    summary_images = SummaryImage.new()
-    images = params[:summary_images].values
-    summary_images.images = images
-    summary_images.operator_id = operator.id
-    summary_images.save
+    if params[:summary_image].present?
+      summary_images = SummaryImage.new()
+      images = params[:summary_images].values
+      summary_images.images = images
+      summary_images.operator_id = operator.id
+      summary_images.save
+    end
   end
 
   def summary_images_urls(operator)
     images = []
-    if operator.summary_image.images.attached?
-      operator.summary_image.images.each do |photo|
-        images << url_for(photo)
+    if operator.summary_image.present?
+      if operator.summary_image.images.attached?
+        operator.summary_image.images.each do |photo|
+          images << url_for(photo)
+        end
       end
     end
     images
