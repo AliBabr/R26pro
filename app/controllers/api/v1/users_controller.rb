@@ -45,7 +45,7 @@ class Api::V1::UsersController < ApplicationController
       else
         subscribed = false
       end
-      all_users << { first_name: user.first_name, last_name: user.last_name, email: user.email, profile_photo: image_url, subscribed: subscribed }
+      all_users << { user_id: @user.id, first_name: user.first_name, last_name: user.last_name, email: user.email, profile_photo: image_url, subscribed: subscribed }
     end
     render json: { all_users: all_users }, status: 200
   rescue StandardError => e # rescue if any exception occurr
