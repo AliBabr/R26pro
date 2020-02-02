@@ -2,7 +2,7 @@
 
 class Api::V1::StrategiesController < ApplicationController
   before_action :authenticate
-  before_action :set_strategy, only: %i[destroy_strategy update_strategy]
+  before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy]
   before_action :set_site, only: %i[create]
   before_action :is_admin, only: %i[create destroy_strategy update_strategy]
 
@@ -15,6 +15,18 @@ class Api::V1::StrategiesController < ApplicationController
       render json: { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url }, status: 200
     else
       render json: strategy.errors.messages, status: 400
+    end
+  rescue StandardError => e
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_strategy
+    if @strategy.present?
+      image_url = ""
+      image_url = url_for(@strategy.image) if @strategy.image.attached?
+      render json: { strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
+    else
+      render json: { error: "staregy not found" }, status: 400
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request

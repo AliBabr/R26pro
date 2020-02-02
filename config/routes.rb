@@ -68,6 +68,7 @@ Rails.application.routes.draw do
         collection do
           put :update_strategy
           delete :destroy_strategy
+          get :get_strategy
         end
       end
 
