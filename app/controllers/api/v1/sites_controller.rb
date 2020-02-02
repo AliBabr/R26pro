@@ -2,7 +2,7 @@
 
 class Api::V1::SitesController < ApplicationController
   before_action :authenticate
-  before_action :set_site, only: %i[destroy_site update_site]
+  before_action :set_site, only: %i[destroy_site update_site get_site]
   before_action :set_map, only: %i[create]
   before_action :is_admin, only: %i[create destroy_site update_site]
 
@@ -41,6 +41,18 @@ class Api::V1::SitesController < ApplicationController
       all_sites << { site_id: site.id, name: site.name, image: image_url }
     end
     render json: all_sites, status: 200
+  rescue StandardError => e
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_site
+    if @site.present?
+      image_url = ""
+      image_url = url_for(@site.image) if @site.image.attached?
+      render json: { site_id: @site.id, name: @site.name, image: image_url }, status: 200
+    else
+      render json: { error: "staregy not found" }, status: 400
+    end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end

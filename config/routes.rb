@@ -61,6 +61,7 @@ Rails.application.routes.draw do
         collection do
           put :update_site
           delete :destroy_site
+          get :get_site
         end
       end
 
