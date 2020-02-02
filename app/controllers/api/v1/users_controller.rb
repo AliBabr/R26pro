@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate, only: %i[update_account update_password user_data log_out get_user save_stripe_token] # callback for validating user
+  before_action :authenticate, only: %i[update_account update_password user_data log_out get_user save_stripe_token all_users] # callback for validating user
   before_action :forgot_validation, only: [:forgot_password]
   before_action :before_reset, only: [:reset_password]
 
@@ -30,6 +30,24 @@ class Api::V1::UsersController < ApplicationController
       subscribed = false
     end
     render json: { first_name: @user.first_name, last_name: @user.last_name, email: @user.email, profile_photo: image_url, subscribed: subscribed }, status: 200
+  rescue StandardError => e # rescue if any exception occurr
+    render json: { message: "Error: Something went wrong... " }, status: 400
+  end
+
+  def all_users
+    users = User.all
+    all_users = []
+    users.each do |user|
+      image_url = ""
+      image_url = url_for(user.profile_photo) if user.profile_photo.attached?
+      if user.subscriptions.present?
+        subscribed = true
+      else
+        subscribed = false
+      end
+      all_users << { first_name: user.first_name, last_name: user.last_name, email: user.email, profile_photo: image_url, subscribed: subscribed }
+    end
+    render json: { all_users: all_users }, status: 200
   rescue StandardError => e # rescue if any exception occurr
     render json: { message: "Error: Something went wrong... " }, status: 400
   end

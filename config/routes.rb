@@ -14,6 +14,7 @@ Rails.application.routes.draw do
           post :reset_password
           get :get_user
           post :save_stripe_token
+          get :all_users
         end
         member do
           get :reset
