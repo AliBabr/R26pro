@@ -24,7 +24,7 @@ class Api::V1::StrategiesController < ApplicationController
     if @strategy.present?
       image_url = ""
       image_url = url_for(@strategy.image) if @strategy.image.attached?
-      render json: { strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
+      render json: { site_id: @strategy.site_id, strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
     else
       render json: { error: "staregy not found" }, status: 400
     end
