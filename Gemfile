@@ -19,6 +19,7 @@ gem "slim-rails"
 gem 'stripe', '~> 5.7.1'
 gem 'stripe_event'
 gem 'rename'
+gem 'rack-cors'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Use SCSS for stylesheets
