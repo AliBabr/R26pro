@@ -2,7 +2,7 @@
 
 class Api::V1::MapsController < ApplicationController
   before_action :authenticate
-  before_action :set_map, only: %i[destroy_map update_map]
+  before_action :set_map, only: %i[destroy_map update_map get_map]
   before_action :is_admin, only: %i[create destroy_map update_map]
 
   def create
@@ -26,6 +26,18 @@ class Api::V1::MapsController < ApplicationController
       image_url = ""
       image_url = url_for(@map.image) if @map.image.attached?
       render json: { map_id: @map.id, name: @map.name, image: image_url }, status: 200
+    end
+  rescue StandardError => e
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_map
+    if @map.present?
+      image_url = ""
+      image_url = url_for(@map.image) if @map.image.attached?
+      render json: { map_id: @map.id, name: @map.name, image: image_url }, status: 200
+    else
+      render json: { error: "Map not found" }, status: 400
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
