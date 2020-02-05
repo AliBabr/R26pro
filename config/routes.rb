@@ -40,6 +40,7 @@ Rails.application.routes.draw do
         collection do
           put :update_map
           delete :destroy_map
+          get :get_map
         end
       end
 
