@@ -49,7 +49,7 @@ class Api::V1::SitesController < ApplicationController
     if @site.present?
       image_url = ""
       image_url = url_for(@site.image) if @site.image.attached?
-      render json: { site_id: @site.id, name: @site.name, image: image_url }, status: 200
+      render json: { site_id: @site.id, name: @site.name, image: image_url, map_id: @site.map.id }, status: 200
     else
       render json: { error: "staregy not found" }, status: 400
     end
