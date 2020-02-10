@@ -13,7 +13,7 @@ module R26pro
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins "*"
-        resource "*", headers: :any, methods: [:get, :post, :options]
+        resource "*", headers: :any, methods: [:get, :post, :delete, :put, :patch, :options]
       end
     end
 
