@@ -2,7 +2,7 @@
 # PperatorDetailsController
 class Api::V1::OperatorDetailsController < ApplicationController
   before_action :authenticate
-  before_action :set_detail, only: %i[destroy_detail update_detail]
+  before_action :set_detail, only: %i[destroy_detail update_detail get_operator_detail]
   before_action :is_admin, only: %i[create destroy_detail update_detail]
 
   def create
@@ -46,6 +46,16 @@ class Api::V1::OperatorDetailsController < ApplicationController
   def destroy_detail
     @detail.destroy
     render json: { message: "detail deleted successfully!" }, status: 200
+  rescue StandardError => e # rescu if any exception occure
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_operator_detail
+    if @detail.present?
+      logo_url = ""
+      logo_url = url_for(@detail.logo) if @detail.logo.attached?
+      render json: { operator_detail_id: @detail.id, name: @detail.name, description: @detail.description, logo: logo_url }, status: 200
+    end
   rescue StandardError => e # rescu if any exception occure
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
