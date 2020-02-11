@@ -2,7 +2,7 @@
 
 class Api::V1::OperatorsController < ApplicationController
   before_action :authenticate
-  before_action :set_operator, only: %i[ update_operator destroy_operator ]
+  before_action :set_operator, only: %i[ update_operator destroy_operator get_operator ]
   before_action :set_strategy, only: %i[create]
   before_action :set_details, only: %i[create]
   before_action :set_weapons, only: %i[create]
@@ -58,6 +58,19 @@ class Api::V1::OperatorsController < ApplicationController
       all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }
     end
     render json: all_operators, status: 200
+  rescue StandardError => e
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_operator
+    if @operator.present?
+      weapon = @operator.weapon
+      details = @operator.operator_detail
+      summary_images = summary_images_urls(@operator)
+      sketch_image = ""; sketch_image = url_for(@operator.sketch_image) if @operator.sketch_image.attached?
+      logo = ""; logo = url_for(details.logo) if details.logo.attached?
+      render json: { weapon_id: weapon.id, details: details.id, operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }, status: 200
+    end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end

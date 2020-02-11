@@ -2,7 +2,7 @@
 
 class Api::V1::WeaponsController < ApplicationController
   before_action :authenticate
-  before_action :set_weapon, only: %i[destroy_weapon update_weapon]
+  before_action :set_weapon, only: %i[destroy_weapon update_weapon get_weapon]
   before_action :is_admin, only: %i[create destroy_weapon update_weapon]
 
   def create
@@ -27,11 +27,17 @@ class Api::V1::WeaponsController < ApplicationController
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 
+  def get_weapon
+    if @weapon.present?
+      render json: { weapon_id: @weapon.id, gadget1: @weapon.gadget1, gadget2: @weapon.gadget2, primary_weapon: @weapon.primary_weapon, secondary_weapon: @weapon.secondary_weapon }, status: 200
+    end
+  rescue StandardError => e
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
   def index
     weapons = Weapon.all; all_weapons = []
     weapons.each do |weapon|
-      image_url = ""
-      image_url = url_for(weapon.image) if weapon.image.attached?
       all_weapons << { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon }
     end
     render json: all_weapons, status: 200

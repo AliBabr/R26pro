@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         collection do
           put :update_detail
           delete :destroy_detail
+          get :get_operator_detail
         end
       end
 
@@ -55,6 +56,7 @@ Rails.application.routes.draw do
         collection do
           put :update_weapon
           delete :destroy_weapon
+          get :get_weapon
         end
       end
 
@@ -78,6 +80,7 @@ Rails.application.routes.draw do
         collection do
           put :update_operator
           delete :destroy_operator
+          get :get_operator
         end
       end
 
