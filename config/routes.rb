@@ -15,6 +15,7 @@ Rails.application.routes.draw do
           get :get_user
           post :save_stripe_token
           get :all_users
+          delete :destroy_user
         end
         member do
           get :reset

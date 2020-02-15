@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate, only: %i[update_account update_password user_data log_out get_user save_stripe_token all_users] # callback for validating user
+  before_action :authenticate, only: %i[update_account update_password user_data log_out get_user save_stripe_token all_users destroy_user] # callback for validating user
   before_action :forgot_validation, only: [:forgot_password]
   before_action :before_reset, only: [:reset_password]
 
@@ -145,6 +145,18 @@ class Api::V1::UsersController < ApplicationController
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  #Method  for deleting  user
+  def destroy_user
+
+    user_to_delete= User.find_by_email(params[:email])
+    binding.pry
+    user_to_delete.destroy 
+    render json: { message: "user deleted successfully!" }, status: 200
+     rescue StandardError => e # rescue if any exception occure
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  
   end
 
   private
