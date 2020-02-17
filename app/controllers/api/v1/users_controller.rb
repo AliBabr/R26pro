@@ -151,7 +151,6 @@ class Api::V1::UsersController < ApplicationController
   def destroy_user
 
     user_to_delete= User.find_by_email(params[:email])
-    binding.pry
     user_to_delete.destroy 
     render json: { message: "user deleted successfully!" }, status: 200
      rescue StandardError => e # rescue if any exception occure

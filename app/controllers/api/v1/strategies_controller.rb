@@ -2,7 +2,7 @@
 
 class Api::V1::StrategiesController < ApplicationController
   before_action :authenticate
-  before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy]
+  before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy ]
   before_action :set_site, only: %i[create]
   before_action :is_admin, only: %i[create destroy_strategy update_strategy]
 
@@ -64,7 +64,39 @@ class Api::V1::StrategiesController < ApplicationController
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 
+  def get_operators
+    
+    operators = Operator.all.where(strategy_id: params[:id])
+    all_operators = []
+    operators.each do |op|
+
+      weapon = op.weapon
+      details = op.operator_detail
+
+      summary_images = summary_images_urls(op)
+      sketch_image = ""; sketch_image = url_for(op.sketch_image) if op.sketch_image.attached?
+      logo = ""; logo = url_for(details.logo) if details.logo.attached?
+      all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }
+
+      
+    
+    end
+    render json: all_operators, status: 200
+  end
+
   private
+
+  def summary_images_urls(operator)
+    images = []
+    if operator.summary_image.present?
+      if operator.summary_image.images.attached?
+        operator.summary_image.images.each do |photo|
+          images << url_for(photo)
+        end
+      end
+    end
+    images
+  end
 
   def set_strategy # instance methode for strategy
     @strategy = Strategy.find_by_id(params[:strategy_id])

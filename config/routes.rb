@@ -75,6 +75,13 @@ Rails.application.routes.draw do
           delete :destroy_strategy
           get :get_strategy
         end
+
+        member do
+          #adding  prefixes  for the sake  of different method and  simpler  controller logic
+          get  :get_operators
+
+        end
+         
       end
 
       resources :operators, only: %i[create index] do

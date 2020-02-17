@@ -14,7 +14,7 @@ class Api::V1::OperatorsController < ApplicationController
     operator.strategy_id = @strategy.id
     operator.operator_detail_id = @details.id
     operator.weapon_id = @weapon.id
-
+     binding.pry
     if operator.save
       set_summary_images(operator)
       weapon = operator.weapon
@@ -26,6 +26,7 @@ class Api::V1::OperatorsController < ApplicationController
     else
       render json: operator.errors.messages, status: 400
     end
+    #this error thrown even when opertor is created  succefully
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
@@ -57,6 +58,7 @@ class Api::V1::OperatorsController < ApplicationController
       summary_images = summary_images_urls(operator)
       all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }
     end
+
     render json: all_operators, status: 200
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -121,7 +123,7 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def operator_params
-    params.permit(:sketch_image)
+    params.permit(:sketch_image )
   end
 
   def is_admin
@@ -132,16 +134,20 @@ class Api::V1::OperatorsController < ApplicationController
     end
   end
 
+  #this logic should be moved to model
+
+ 
   def set_summary_images(operator)
     if params[:summary_images].present?
       summary_images = SummaryImage.new()
-      images = params[:summary_images].values
-      summary_images.images = images
+      summary_images.images.attach(params[:summary_images])
       summary_images.operator_id = operator.id
       summary_images.save
     end
   end
 
+  # this logic  should  be moved  to the  model
+  
   def summary_images_urls(operator)
     images = []
     if operator.summary_image.present?
@@ -152,8 +158,8 @@ class Api::V1::OperatorsController < ApplicationController
       end
     end
     images
-  end
-
+  end 
+ 
   def set_sketch_image(operator)
     sketch_image = Sketch.new(sketch_image: params[:sketch_image])
     sketch_image.operator_id = operator.id
