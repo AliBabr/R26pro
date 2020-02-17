@@ -74,9 +74,10 @@ class Api::V1::StrategiesController < ApplicationController
       details = op.operator_detail
 
       summary_images = summary_images_urls(op)
+      strategy_maps = strategy_maps_urls(op)
       sketch_image = ""; sketch_image = url_for(op.sketch_image) if op.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
-      all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }
+      all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }
 
       
     
@@ -91,6 +92,18 @@ class Api::V1::StrategiesController < ApplicationController
     if operator.summary_image.present?
       if operator.summary_image.images.attached?
         operator.summary_image.images.each do |photo|
+          images << url_for(photo)
+        end
+      end
+    end
+    images
+  end
+
+  def strategy_maps_urls(operator)
+    images = []
+    if operator.strategy_map.present?
+      if operator.strategy_map.images.attached?
+        operator.strategy_map.images.each do |photo|
           images << url_for(photo)
         end
       end

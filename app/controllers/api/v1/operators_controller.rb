@@ -11,18 +11,37 @@ class Api::V1::OperatorsController < ApplicationController
 
   def create
     operator = Operator.new(operator_params)
+     
+     # check count  for strategy maps for operator
+      if (Operator.all.where(id: params[:strategy_id]).length >= 5)
+        
+           render json: { message: "can't add more operator to this strategy, it already has  max  number  of operators " }, status: :bad_request
+        elseif(params[:strategy_map_images].length!= 3)
+        
+          render json: { message: " pls make sure  exactly 3  strategy maps are attached " }, status: :bad_request
+         
+      end
+
+
+     #check for strategy map array length
     operator.strategy_id = @strategy.id
     operator.operator_detail_id = @details.id
     operator.weapon_id = @weapon.id
-     binding.pry
+    
     if operator.save
       set_summary_images(operator)
+      set_strategy_images(operator)
+
       weapon = operator.weapon
       details = operator.operator_detail
+
       sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
+
       summary_images = summary_images_urls(operator)
-      render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images }, status: 200
+      
+       strategy_maps = strategy_maps_urls(operator)
+      render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
     else
       render json: operator.errors.messages, status: 400
     end
@@ -143,6 +162,7 @@ class Api::V1::OperatorsController < ApplicationController
       summary_images.images.attach(params[:summary_images])
       summary_images.operator_id = operator.id
       summary_images.save
+      binding.pry
     end
   end
 
@@ -159,6 +179,8 @@ class Api::V1::OperatorsController < ApplicationController
     end
     images
   end 
+  
+  
  
   def set_sketch_image(operator)
     sketch_image = Sketch.new(sketch_image: params[:sketch_image])
@@ -171,4 +193,29 @@ class Api::V1::OperatorsController < ApplicationController
     sketch_image = url_for(operator.sketch.sketch_image) if operator.sketch.sketch_image.attached?
     return sketch_image
   end
+
+
+
+  def set_strategy_images(operator)
+    if params[:strategy_map_images].present?
+      strategy_images = StrategyMap.new()
+      strategy_images.images.attach(params[:strategy_map_images])
+      strategy_images.operator_id = operator.id
+      strategy_images.save
+     
+  end
+end
+
+  def strategy_maps_urls(operator)
+    images = []
+    if operator.strategy_map.present?
+      if operator.strategy_map.images.attached?
+        operator.strategy_map.images.each do |photo|
+          images << url_for(photo)
+        end
+      end
+    end
+    images
+  end
+
 end
