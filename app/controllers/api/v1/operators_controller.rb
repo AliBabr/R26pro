@@ -162,7 +162,7 @@ class Api::V1::OperatorsController < ApplicationController
       summary_images.images.attach(params[:summary_images])
       summary_images.operator_id = operator.id
       summary_images.save
-      binding.pry
+      
     end
   end
 
