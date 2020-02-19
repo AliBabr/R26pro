@@ -15,6 +15,7 @@ Rails.application.routes.draw do
           get :get_user
           post :save_stripe_token
           get :all_users
+          delete :destroy_user
         end
         member do
           get :reset
@@ -74,6 +75,13 @@ Rails.application.routes.draw do
           delete :destroy_strategy
           get :get_strategy
         end
+
+        member do
+          #adding  prefixes  for the sake  of different method and  simpler  controller logic
+          get  :get_operators
+
+        end
+         
       end
 
       resources :operators, only: %i[create index] do

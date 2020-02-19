@@ -60,7 +60,7 @@ class Api::V1::SitesController < ApplicationController
   def destroy_site
     @site.destroy
     render json: { message: "site deleted successfully!" }, status: 200
-  rescue StandardError => e # rescu if any exception occure
+    rescue StandardError => e # rescu if any exception occure
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_12_164246) do
+ActiveRecord::Schema.define(version: 2020_02_19_111942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,6 +105,13 @@ ActiveRecord::Schema.define(version: 2020_01_12_164246) do
     t.bigint "site_id"
   end
 
+  create_table "strategy_maps", force: :cascade do |t|
+    t.bigint "operator_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["operator_id"], name: "index_strategy_maps_on_operator_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.string "description"
     t.string "status"
@@ -149,7 +156,9 @@ ActiveRecord::Schema.define(version: 2020_01_12_164246) do
     t.string "secondary_weapon"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "strategy_maps", "operators"
 end
