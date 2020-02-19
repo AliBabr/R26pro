@@ -7,8 +7,9 @@ class Api::V1::WeaponsController < ApplicationController
 
   def create
     weapon = Weapon.new(weapon_params)
+     
     if weapon.save
-      render json: { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon,weapon_name: @weapon.name  }, status: 200
+      render json: { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon,name: @weapon.name  }, status: 200
     else
       render json: weapon.errors.messages, status: 400
     end
@@ -21,7 +22,7 @@ class Api::V1::WeaponsController < ApplicationController
     if @weapon.errors.any?
       render json: @weapon.errors.messages, status: 400
     else
-      render json: { weapon_id: @weapon.id, gadget1: @weapon.gadget1, gadget2: @weapon.gadget2, primary_weapon: @weapon.primary_weapon, secondary_weapon: @weapon.secondary_weapon, weapon_name: @weapon.name }, status: 200
+      render json: { weapon_id: @weapon.id, gadget1: @weapon.gadget1, gadget2: @weapon.gadget2, primary_weapon: @weapon.primary_weapon, secondary_weapon: @weapon.secondary_weapon, name: @weapon.name }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -29,7 +30,7 @@ class Api::V1::WeaponsController < ApplicationController
 
   def get_weapon
     if @weapon.present?
-      render json: { weapon_id: @weapon.id, gadget1: @weapon.gadget1, gadget2: @weapon.gadget2, primary_weapon: @weapon.primary_weapon, secondary_weapon: @weapon.secondary_weapon,weapon_name: @weapon.name  }, status: 200
+      render json: { weapon_id: @weapon.id, gadget1: @weapon.gadget1, gadget2: @weapon.gadget2, primary_weapon: @weapon.primary_weapon, secondary_weapon: @weapon.secondary_weapon,name: @weapon.name  }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -38,7 +39,7 @@ class Api::V1::WeaponsController < ApplicationController
   def index
     weapons = Weapon.all; all_weapons = []
     weapons.each do |weapon|
-      all_weapons << { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon,weapon_name: weapon.name  }
+      all_weapons << { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon,name: weapon.name  }
     end
     render json: all_weapons, status: 200
   rescue StandardError => e
