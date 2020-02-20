@@ -27,6 +27,14 @@ class Api::V1::OperatorsController < ApplicationController
     operator.strategy_id = @strategy.id
     operator.operator_detail_id = @details.id
     operator.weapon_id = @weapon.id
+    if !params[:summary_images].kind_of?(Array)
+      render json: { message: " pls make sure  summary_images is an array " }, status: :bad_request
+    elseif !params[:strategy_map_images].kind_of?(Array)
+        render json: { message: " pls make sure  strategy_map_images is an array " }, status: :bad_request
+
+    elseif  params[:strategy_map_images].kind_of?(Array)
+          render json: { message: " pls make sure  sketch image is not an array " }, status: :bad_request
+    end
     
     if operator.save
       set_summary_images(operator)
@@ -38,7 +46,7 @@ class Api::V1::OperatorsController < ApplicationController
       sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
 
-      summary_images = summary_images_urls(operator)
+       summary_images = summary_images_urls(operator)
       
        strategy_maps = strategy_maps_urls(operator)
       render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
@@ -47,7 +55,7 @@ class Api::V1::OperatorsController < ApplicationController
     end
     #this error thrown even when opertor is created  succefully
   rescue StandardError => e
-    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+    render json: { message: "this is modified. Error: Something went wrong... " }, status: :bad_request
   end
 
   def update_operator
