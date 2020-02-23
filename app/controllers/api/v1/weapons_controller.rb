@@ -7,7 +7,7 @@ class Api::V1::WeaponsController < ApplicationController
 
   def create
     weapon = Weapon.new(weapon_params)
-     
+      
     if weapon.save
       render json: { weapon_id: weapon.id, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon,name: @weapon.name  }, status: 200
     else

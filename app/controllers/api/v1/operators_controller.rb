@@ -27,14 +27,14 @@ class Api::V1::OperatorsController < ApplicationController
     operator.strategy_id = @strategy.id
     operator.operator_detail_id = @details.id
     operator.weapon_id = @weapon.id
-    if !params[:summary_images].kind_of?(Array)
-      render json: { message: " pls make sure  summary_images is an array " }, status: :bad_request
-    elseif !params[:strategy_map_images].kind_of?(Array)
-        render json: { message: " pls make sure  strategy_map_images is an array " }, status: :bad_request
+    # if !params[:summary_images].kind_of?(Array)
+    #   render json: { message: " pls make sure  summary_images is an array " }, status: :bad_request
+    # elseif !params[:strategy_map_images].kind_of?(Array)
+    #     render json: { message: " pls make sure  strategy_map_images is an array " }, status: :bad_request
 
-    elseif  params[:strategy_map_images].kind_of?(Array)
-          render json: { message: " pls make sure  sketch image is not an array " }, status: :bad_request
-    end
+    # elseif  params[:strategy_map_images].kind_of?(Array)
+    #       render json: { message: " pls make sure  sketch image is not an array " }, status: :bad_request
+    # end
     
     if operator.save
       set_summary_images(operator)
@@ -171,6 +171,7 @@ class Api::V1::OperatorsController < ApplicationController
 
  
   def set_summary_images(operator)
+     binding.pry
     if params[:summary_images].present?
       summary_images = SummaryImage.new()
       summary_images.images.attach(params[:summary_images])
