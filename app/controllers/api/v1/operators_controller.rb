@@ -7,91 +7,46 @@ class Api::V1::OperatorsController < ApplicationController
   before_action :set_details, only: %i[create]
   before_action :set_weapons, only: %i[create]
 
-  before_action :is_admin, only: %i[create destroy_operator update_operator]
+  # before_action :is_admin, only: %i[create destroy_operator update_operator]
 
   def create
-    operator = Operator.new(operator_params)
-     
-     # check count  for strategy maps for operator
-      if (Operator.all.where(id: params[:strategy_id]).length >= 5)
-        
-           render json: { message: "can't add more operator to this strategy, it already has  max  number  of operators " }, status: :bad_request
-        elseif(params[:strategy_map_images].length!= 3)
-        
-          render json: { message: " pls make sure  exactly 3  strategy maps are attached " }, status: :bad_request
-         
-      end
 
+    # check count  for strategy maps for operator
 
-     #check for strategy map array length
-    operator.strategy_id = @strategy.id
-    operator.operator_detail_id = @details.id
-    operator.weapon_id = @weapon.id 
-    # if !params[:summary_images].kind_of?(Array)
-    #   render json: { message: " pls make sure  summary_images is an array " }, status: :bad_request
-    # elseif !params[:strategy_map_images].kind_of?(Array)
-    #     render json: { message: " pls make sure  strategy_map_images is an array " }, status: :bad_request
-
-    # elseif  params[:strategy_map_images].kind_of?(Array)
-    #       render json: { message: " pls make sure  sketch image is not an array " }, status: :bad_request
-    # end
-
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts(params)
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-
-
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts(params[:summary_images])
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts(params[:summary_images][1])
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-    puts("********************************************")
-
-    
-   
-
-    if operator.save
-      set_summary_images(operator)
-      set_strategy_images(operator)
-    
-      weapon = operator.weapon
-      details = operator.operator_detail
-
-      sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
-      logo = ""; logo = url_for(details.logo) if details.logo.attached?
-
-       summary_images = summary_images_urls(operator)
-      
-       strategy_maps = strategy_maps_urls(operator)
-      render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
+    if @strategy.operators.count > 5
+      render json: { message: "can't add more operator to this strategy, it already has  max  number  of operators " }, status: :bad_request
     else
-      render json: operator.errors.messages, status: 400
+      images = 0
+      if params[:strategy_map_images].present?
+        images = params[:strategy_map_images].values.count
+      end
+      if images != 3
+        render json: { message: "Please add exact three images for straegy map..! " }, status: :bad_request
+      else
+        #check for strategy map array length
+        operator = Operator.new(operator_params)
+        operator.strategy_id = @strategy.id
+        operator.operator_detail_id = @details.id
+        operator.weapon_id = @weapon.id
+
+        if operator.save
+          set_summary_images(operator)
+          set_strategy_images(operator)
+
+          weapon = operator.weapon
+          details = operator.operator_detail
+
+          sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
+          logo = ""; logo = url_for(details.logo) if details.logo.attached?
+
+          summary_images = summary_images_urls(operator)
+
+          strategy_maps = strategy_maps_urls(operator)
+          render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
+        else
+          render json: operator.errors.messages, status: 400
+        end
+      end
     end
     #this error thrown even when opertor is created  succefully
   rescue StandardError => e
@@ -105,7 +60,7 @@ class Api::V1::OperatorsController < ApplicationController
     else
       set_summary_images(@operator)
       set_strategy_images(@operator)
-      
+
       weapon = @operator.weapon
       details = @operator.operator_detail
       sketch_image = ""; sketch_image = url_for(@operator.sketch_image) if @operator.sketch_image.attached?
@@ -196,7 +151,7 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def operator_params
-    params.permit(:sketch_image )
+    params.permit(:sketch_image)
   end
 
   def is_admin
@@ -209,20 +164,18 @@ class Api::V1::OperatorsController < ApplicationController
 
   #this logic should be moved to model
 
- 
   def set_summary_images(operator)
-    
     if params[:summary_images].present?
       summary_images = SummaryImage.new()
-      summary_images.images.attach(params[:summary_images])
+      images = params[:summary_images].values
+      summary_images.images = images
       summary_images.operator_id = operator.id
       summary_images.save
-      
     end
   end
 
   # this logic  should  be moved  to the  model
-  
+
   def summary_images_urls(operator)
     images = []
     if operator.summary_image.present?
@@ -233,10 +186,8 @@ class Api::V1::OperatorsController < ApplicationController
       end
     end
     images
-  end 
-  
-  
- 
+  end
+
   def set_sketch_image(operator)
     sketch_image = Sketch.new(sketch_image: params[:sketch_image])
     sketch_image.operator_id = operator.id
@@ -249,17 +200,15 @@ class Api::V1::OperatorsController < ApplicationController
     return sketch_image
   end
 
-
-
   def set_strategy_images(operator)
     if params[:strategy_map_images].present?
       strategy_images = StrategyMap.new()
-      strategy_images.images.attach(params[:strategy_map_images])
+      images = params[:strategy_map_images].values
+      strategy_images.images = images
       strategy_images.operator_id = operator.id
       strategy_images.save
-     
+    end
   end
-end
 
   def strategy_maps_urls(operator)
     images = []
@@ -272,5 +221,4 @@ end
     end
     images
   end
-
 end
