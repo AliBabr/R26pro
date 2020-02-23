@@ -35,6 +35,19 @@ class Api::V1::OperatorsController < ApplicationController
     # elseif  params[:strategy_map_images].kind_of?(Array)
     #       render json: { message: " pls make sure  sketch image is not an array " }, status: :bad_request
     # end
+
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+    puts(params)
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+    puts("********************************************")
+
     
     if operator.save
       set_summary_images(operator)
@@ -171,7 +184,7 @@ class Api::V1::OperatorsController < ApplicationController
 
  
   def set_summary_images(operator)
-    binding.pry
+    
     if params[:summary_images].present?
       summary_images = SummaryImage.new()
       summary_images.images.attach(params[:summary_images])
