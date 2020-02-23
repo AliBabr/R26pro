@@ -47,8 +47,8 @@ class Api::V1::OperatorsController < ApplicationController
     puts("********************************************")
     puts("********************************************")
     puts("********************************************")
+     binding.pry 
 
-    
     if operator.save
       set_summary_images(operator)
       set_strategy_images(operator)
