@@ -154,7 +154,6 @@ ActiveRecord::Schema.define(version: 2020_02_17_151110) do
     t.string "gadget2"
     t.string "primary_weapon"
     t.string "secondary_weapon"
-    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
