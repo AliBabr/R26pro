@@ -2,7 +2,7 @@
 
 class Api::V1::SitesController < ApplicationController
   before_action :authenticate
-  before_action :set_site, only: %i[destroy_site update_site get_site]
+  before_action :set_site, only: %i[destroy_site update_site get_site get_site_strategies]
   before_action :set_map, only: %i[create]
   before_action :is_admin, only: %i[create destroy_site update_site]
 
@@ -60,7 +60,19 @@ class Api::V1::SitesController < ApplicationController
   def destroy_site
     @site.destroy
     render json: { message: "site deleted successfully!" }, status: 200
-    rescue StandardError => e # rescu if any exception occure
+  rescue StandardError => e # rescu if any exception occure
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_site_strategies
+    @strategies = []
+    @site.strategies.each do |strategy|
+      image_url = ""
+      image_url = url_for(strategy.image) if strategy.image.attached?
+      @strategies << { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url }
+    end
+    render json: { strategies: @strategies }, status: 200
+  rescue StandardError => e # rescu if any exception occure
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
 

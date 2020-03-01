@@ -3,7 +3,7 @@
 class Api::V1::OperatorsController < ApplicationController
   before_action :authenticate
   before_action :set_operator, only: %i[ update_operator destroy_operator get_operator ]
-  before_action :set_strategy, only: %i[create]
+  # before_action :set_strategy, only: %i[create]
   before_action :set_details, only: %i[create]
   before_action :set_weapons, only: %i[create]
 
@@ -13,39 +13,34 @@ class Api::V1::OperatorsController < ApplicationController
 
     # check count  for strategy maps for operator
 
-    if @strategy.operators.count > 5
-      render json: { message: "can't add more operator to this strategy, it already has  max  number  of operators " }, status: :bad_request
+    images = 0
+    if params[:strategy_map_images].present?
+      images = params[:strategy_map_images].values.count
+    end
+    if images != 3
+      render json: { message: "Please add exact three images for straegy map..! " }, status: :bad_request
     else
-      images = 0
-      if params[:strategy_map_images].present?
-        images = params[:strategy_map_images].values.count
-      end
-      if images != 3
-        render json: { message: "Please add exact three images for straegy map..! " }, status: :bad_request
+      #check for strategy map array length
+      operator = Operator.new(operator_params)
+      operator.operator_detail_id = @details.id
+      operator.weapon_id = @weapon.id
+
+      if operator.save
+        set_summary_images(operator)
+        set_strategy_images(operator)
+
+        weapon = operator.weapon
+        details = operator.operator_detail
+
+        sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
+        logo = ""; logo = url_for(details.logo) if details.logo.attached?
+
+        summary_images = summary_images_urls(operator)
+
+        strategy_maps = strategy_maps_urls(operator)
+        render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
       else
-        #check for strategy map array length
-        operator = Operator.new(operator_params)
-        operator.strategy_id = @strategy.id
-        operator.operator_detail_id = @details.id
-        operator.weapon_id = @weapon.id
-
-        if operator.save
-          set_summary_images(operator)
-          set_strategy_images(operator)
-
-          weapon = operator.weapon
-          details = operator.operator_detail
-
-          sketch_image = ""; sketch_image = url_for(operator.sketch_image) if operator.sketch_image.attached?
-          logo = ""; logo = url_for(details.logo) if details.logo.attached?
-
-          summary_images = summary_images_urls(operator)
-
-          strategy_maps = strategy_maps_urls(operator)
-          render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
-        else
-          render json: operator.errors.messages, status: 400
-        end
+        render json: operator.errors.messages, status: 400
       end
     end
     #this error thrown even when opertor is created  succefully

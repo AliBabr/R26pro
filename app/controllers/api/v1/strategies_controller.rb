@@ -2,19 +2,21 @@
 
 class Api::V1::StrategiesController < ApplicationController
   before_action :authenticate
-  before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy ]
+  before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy]
   before_action :set_site, only: %i[create]
   before_action :is_admin, only: %i[create destroy_strategy update_strategy]
+  before_action :get_operators, only: %i[create]
 
   def create
     strategy = Strategy.new(strategy_params)
     strategy.site_id = @site.id
     if strategy.save
+      assign_operators(strategy)
       image_url = ""
       image_url = url_for(strategy.image) if strategy.image.attached?
-      render json: { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url }, status: 200
+      render json: { strategy_id: strategy.id, name: strategy.name, strategy_type: strategy.strategy_type, image: image_url, operators: strategy.operators }, status: 200
     else
-      render json: strategy.errors.messages, status: 400
+      render json: strategy.errors.messages, statusoperator_array: 400
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -65,11 +67,9 @@ class Api::V1::StrategiesController < ApplicationController
   end
 
   def get_operators
-    
     operators = Operator.all.where(strategy_id: params[:id])
     all_operators = []
     operators.each do |op|
-
       weapon = op.weapon
       details = op.operator_detail
 
@@ -78,9 +78,6 @@ class Api::V1::StrategiesController < ApplicationController
       sketch_image = ""; sketch_image = url_for(op.sketch_image) if op.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
       all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }
-
-      
-    
     end
     render json: all_operators, status: 200
   end
@@ -138,6 +135,31 @@ class Api::V1::StrategiesController < ApplicationController
       true
     else
       render json: { message: "Only admin can create/update/destroy strategys!" }
+    end
+  end
+
+  def assign_operators(strategy)
+    @operators.each do |op|
+      strategy.operators << op
+    end
+  end
+
+  def get_operators
+    if params[:operator_array].present? && params[:operator_array].values.count == 5
+      operators = params[:operator_array].values
+      @operators = []
+      operators.each do |id|
+        if Operator.find_by_id(id).present?
+          @operators << Operator.find_by_id(id)
+        end
+      end
+      if @operators.count == 5
+        return true
+      else
+        render json: { message: "Please provide exact 5 valid operators..!" }, status: 404
+      end
+    else
+      render json: { message: "Please provide exact 5 operators..!" }, status: 404
     end
   end
 end

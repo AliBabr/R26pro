@@ -2,7 +2,7 @@
 
 class Api::V1::MapsController < ApplicationController
   before_action :authenticate
-  before_action :set_map, only: %i[destroy_map update_map get_map]
+  before_action :set_map, only: %i[destroy_map update_map get_map get_map_sites]
   before_action :is_admin, only: %i[create destroy_map update_map]
 
   def create
@@ -58,6 +58,18 @@ class Api::V1::MapsController < ApplicationController
   def destroy_map
     @map.destroy
     render json: { message: "map deleted successfully!" }, status: 200
+  rescue StandardError => e # rescu if any exception occure
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def get_map_sites
+    @sites = []
+    @map.sites.each do |site|
+      image_url = ""
+      image_url = url_for(site.image) if site.image.attached?
+      @sites << { site_id: site.id, name: site.name, image: image_url }
+    end
+    render json: { sites: @sites }, status: 200
   rescue StandardError => e # rescu if any exception occure
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
