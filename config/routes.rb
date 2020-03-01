@@ -42,6 +42,7 @@ Rails.application.routes.draw do
           put :update_map
           delete :destroy_map
           get :get_map
+          get :get_map_sites
         end
       end
 
@@ -66,6 +67,7 @@ Rails.application.routes.draw do
           put :update_site
           delete :destroy_site
           get :get_site
+          get :get_site_strategies
         end
       end
 
@@ -78,10 +80,8 @@ Rails.application.routes.draw do
 
         member do
           #adding  prefixes  for the sake  of different method and  simpler  controller logic
-          get  :get_operators
-
+          get :get_operators
         end
-         
       end
 
       resources :operators, only: %i[create index] do
