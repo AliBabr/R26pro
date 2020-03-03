@@ -76,6 +76,7 @@ Rails.application.routes.draw do
           put :update_strategy
           delete :destroy_strategy
           get :get_strategy
+          get :get_strategy_operators
         end
 
         member do
@@ -89,6 +90,7 @@ Rails.application.routes.draw do
           put :update_operator
           delete :destroy_operator
           get :get_operator
+          get :operator_strategy_map_images
         end
       end
 
