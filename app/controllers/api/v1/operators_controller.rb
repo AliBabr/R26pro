@@ -2,7 +2,7 @@
 
 class Api::V1::OperatorsController < ApplicationController
   before_action :authenticate
-  before_action :set_operator, only: %i[ update_operator destroy_operator get_operator ]
+  before_action :set_operator, only: %i[ update_operator destroy_operator get_operator operator_strategy_map_images ]
   # before_action :set_strategy, only: %i[create]
   before_action :set_details, only: %i[create]
   before_action :set_weapons, only: %i[create]
@@ -103,6 +103,13 @@ class Api::V1::OperatorsController < ApplicationController
   def destroy_operator
     @operator.destroy
     render json: { message: "operator deleted successfully!" }, status: 200
+  rescue StandardError => e # rescu if any exception occure
+    render json: { message: "Error: Something went wrong... " }, status: :bad_request
+  end
+
+  def operator_strategy_map_images
+    strategy_maps_images = strategy_maps_urls(@operator)
+    render json: { strategy_maps_images: strategy_maps_images }, status: 200
   rescue StandardError => e # rescu if any exception occure
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
   end
