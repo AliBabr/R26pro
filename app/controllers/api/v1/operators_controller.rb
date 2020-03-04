@@ -38,7 +38,7 @@ class Api::V1::OperatorsController < ApplicationController
         summary_images = summary_images_urls(operator)
 
         strategy_maps = strategy_maps_urls(operator)
-        render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
+        render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }, status: 200
       else
         render json: operator.errors.messages, status: 400
       end
@@ -63,7 +63,7 @@ class Api::V1::OperatorsController < ApplicationController
 
       summary_images = summary_images_urls(@operator)
       strategy_maps = strategy_maps_urls(@operator)
-      render json: { operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
+      render json: { operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -78,7 +78,7 @@ class Api::V1::OperatorsController < ApplicationController
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
       summary_images = summary_images_urls(operator)
       strategy_maps = strategy_maps_urls(operator)
-      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }
+      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }
     end
 
     render json: all_operators, status: 200
@@ -94,7 +94,7 @@ class Api::V1::OperatorsController < ApplicationController
       strategy_maps = strategy_maps_urls(@operator)
       sketch_image = ""; sketch_image = url_for(@operator.sketch_image) if @operator.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
-      render json: { weapon_id: weapon.id, details: details.id, operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }, status: 200
+      render json: { weapon_id: weapon.id, details: details.id, operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -153,7 +153,7 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def operator_params
-    params.permit(:sketch_image)
+    params.permit(:sketch_image, :walls, :floor_traps, :sight_of_floor, :line_of_sight, :objectives, :insertion_points, :camera, :ladders)
   end
 
   def is_admin

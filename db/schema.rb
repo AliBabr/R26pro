@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_17_151110) do
+ActiveRecord::Schema.define(version: 2020_03_04_150555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,14 @@ ActiveRecord::Schema.define(version: 2020_02_17_151110) do
     t.bigint "strategy_id"
     t.bigint "operator_detail_id"
     t.bigint "weapon_id"
+    t.string "walls"
+    t.string "floor_traps"
+    t.string "sight_of_floor"
+    t.string "line_of_sight"
+    t.string "objectives"
+    t.string "insertion_points"
+    t.string "camera"
+    t.string "ladders"
   end
 
   create_table "plans", id: :serial, force: :cascade do |t|

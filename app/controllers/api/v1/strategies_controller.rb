@@ -5,7 +5,7 @@ class Api::V1::StrategiesController < ApplicationController
   before_action :set_strategy, only: %i[destroy_strategy update_strategy get_strategy get_strategy_operators]
   before_action :set_site, only: %i[create]
   before_action :is_admin, only: %i[create destroy_strategy update_strategy]
-  before_action :get_operators, only: %i[create]
+  before_action :get_operators, only: %i[create update_strategy]
 
   def create
     strategy = Strategy.new(strategy_params)
@@ -26,7 +26,7 @@ class Api::V1::StrategiesController < ApplicationController
     if @strategy.present?
       image_url = ""
       image_url = url_for(@strategy.image) if @strategy.image.attached?
-      render json: { site_id: @strategy.site_id, strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
+      render json: { site_id: @strategy.site_id, strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url, operators: @strategy.operators }, status: 200
     else
       render json: { error: "staregy not found" }, status: 400
     end
@@ -35,13 +35,14 @@ class Api::V1::StrategiesController < ApplicationController
   end
 
   def update_strategy
+    assign_operators(@strategy)
     @strategy.update(strategy_params)
     if @strategy.errors.any?
       render json: @strategy.errors.messages, status: 400
     else
       image_url = ""
       image_url = url_for(@strategy.image) if @strategy.image.attached?
-      render json: { strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url }, status: 200
+      render json: { strategy_id: @strategy.id, name: @strategy.name, strategy_type: @strategy.strategy_type, image: image_url, operators: @strategy.operators }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -91,7 +92,7 @@ class Api::V1::StrategiesController < ApplicationController
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
       summary_images = summary_images_urls(operator)
       strategy_maps = strategy_maps_urls(operator)
-      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }
+      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }
     end
     render json: all_operators, status: 200
   rescue StandardError => e
@@ -155,8 +156,10 @@ class Api::V1::StrategiesController < ApplicationController
   end
 
   def assign_operators(strategy)
+    strategy.operators.delete_all
     @operators.each do |op|
-      strategy.operators << op
+      strategy.operators << Operator.find_by_id(op.id)
+      strategy.save
     end
   end
 
