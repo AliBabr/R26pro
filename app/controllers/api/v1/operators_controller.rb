@@ -29,6 +29,9 @@ class Api::V1::OperatorsController < ApplicationController
         set_summary_images(operator)
         set_strategy_images(operator)
 
+        set_operator_video(operator)
+        operator_video = get_operator_video(operator)
+
         weapon = operator.weapon
         details = operator.operator_detail
 
@@ -38,7 +41,7 @@ class Api::V1::OperatorsController < ApplicationController
         summary_images = summary_images_urls(operator)
 
         strategy_maps = strategy_maps_urls(operator)
-        render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }, status: 200
+        render json: { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders, operator_video: operator_video, upload_text: operator.upload_text }, status: 200
       else
         render json: operator.errors.messages, status: 400
       end
@@ -56,6 +59,9 @@ class Api::V1::OperatorsController < ApplicationController
       set_summary_images(@operator)
       set_strategy_images(@operator)
 
+      set_operator_video(@operator)
+      operator_video = get_operator_video(@operator)
+
       weapon = @operator.weapon
       details = @operator.operator_detail
       sketch_image = ""; sketch_image = url_for(@operator.sketch_image) if @operator.sketch_image.attached?
@@ -63,7 +69,7 @@ class Api::V1::OperatorsController < ApplicationController
 
       summary_images = summary_images_urls(@operator)
       strategy_maps = strategy_maps_urls(@operator)
-      render json: { operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders }, status: 200
+      render json: { operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders, operator_video: operator_video, upload_text: @operator.upload_text }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -78,7 +84,8 @@ class Api::V1::OperatorsController < ApplicationController
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
       summary_images = summary_images_urls(operator)
       strategy_maps = strategy_maps_urls(operator)
-      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }
+      operator_video = get_operator_video(operator)
+      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders, operator_video: operator_video, upload_text: operator.upload_text }
     end
 
     render json: all_operators, status: 200
@@ -92,9 +99,11 @@ class Api::V1::OperatorsController < ApplicationController
       details = @operator.operator_detail
       summary_images = summary_images_urls(@operator)
       strategy_maps = strategy_maps_urls(@operator)
+      operator_video = get_operator_video(@operator)
+
       sketch_image = ""; sketch_image = url_for(@operator.sketch_image) if @operator.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
-      render json: { weapon_id: weapon.id, details: details.id, operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders }, status: 200
+      render json: { weapon_id: weapon.id, details: details.id, operator_id: @operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: @operator.walls, floor_traps: @operator.floor_traps, sight_of_floor: @operator.sight_of_floor, line_of_sight: @operator.line_of_sight, objectives: @operator.objectives, insertion_points: @operator.insertion_points, camera: @operator.camera, ladders: @operator.ladders, operator_video: operator_video, upload_text: @operator.upload_text }, status: 200
     end
   rescue StandardError => e
     render json: { message: "Error: Something went wrong... " }, status: :bad_request
@@ -153,7 +162,7 @@ class Api::V1::OperatorsController < ApplicationController
   end
 
   def operator_params
-    params.permit(:sketch_image, :walls, :floor_traps, :sight_of_floor, :line_of_sight, :objectives, :insertion_points, :camera, :ladders)
+    params.permit(:sketch_image, :walls, :floor_traps, :sight_of_floor, :line_of_sight, :objectives, :insertion_points, :camera, :ladders, :upload_text)
   end
 
   def is_admin
@@ -174,6 +183,22 @@ class Api::V1::OperatorsController < ApplicationController
       summary_images.operator_id = operator.id
       summary_images.save
     end
+  end
+
+  def set_operator_video(operator)
+    if params[:video].present?
+      video = OperatorVideo.new(video: params[:video])
+      video.operator_id = operator.id
+      video.save
+    end
+  end
+
+  def get_operator_video(operator)
+    operator_video = ""
+    if operator.operator_video.present?
+      operator_video = ""; operator_video = url_for(operator.operator_video.video) if operator.operator_video.video.attached?
+    end
+    return operator_video
   end
 
   # this logic  should  be moved  to the  model
