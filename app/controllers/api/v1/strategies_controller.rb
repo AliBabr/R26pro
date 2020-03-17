@@ -78,7 +78,11 @@ class Api::V1::StrategiesController < ApplicationController
       strategy_maps = strategy_maps_urls(op)
       sketch_image = ""; sketch_image = url_for(op.sketch_image) if op.sketch_image.attached?
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
-      all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps }
+      operator_video = ""
+      if op.operator_video.present?
+        operator_video = url_for(op.operator_video.video) if op.operator_video.video.attached?
+      end
+      all_operators << { weapon_id: weapon.id, details: details.id, operator_id: op.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, operator_video: operator_video, upload_text: op.upload_text }
     end
     render json: all_operators, status: 200
   end
@@ -92,7 +96,11 @@ class Api::V1::StrategiesController < ApplicationController
       logo = ""; logo = url_for(details.logo) if details.logo.attached?
       summary_images = summary_images_urls(operator)
       strategy_maps = strategy_maps_urls(operator)
-      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders }
+      operator_video = ""
+      if operator.operator_video.present?
+        operator_video = url_for(operator.operator_video.video) if operator.operator_video.video.attached?
+      end
+      all_operators << { operator_id: operator.id, name: details.name, description: details.description, gadget1: weapon.gadget1, gadget2: weapon.gadget2, primary_weapon: weapon.primary_weapon, secondary_weapon: weapon.secondary_weapon, logo: logo, sketch_image: sketch_image, summary_images: summary_images, strategy_maps: strategy_maps, walls: operator.walls, floor_traps: operator.floor_traps, sight_of_floor: operator.sight_of_floor, line_of_sight: operator.line_of_sight, objectives: operator.objectives, insertion_points: operator.insertion_points, camera: operator.camera, ladders: operator.ladders, upload_text: operator.upload_text, operator_video: operator_video }
     end
     render json: all_operators, status: 200
   rescue StandardError => e
